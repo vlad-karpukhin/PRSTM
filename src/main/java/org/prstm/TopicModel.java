@@ -1,6 +1,3 @@
-/*
- * &copy; John Wiley &amp; Sons, Inc
- */
 package org.prstm;
 
 import java.util.Iterator;
