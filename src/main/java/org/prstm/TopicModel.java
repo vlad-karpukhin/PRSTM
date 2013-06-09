@@ -1,11 +1,15 @@
 package org.prstm;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.mahout.common.Pair;
 import org.apache.mahout.math.Matrix;
 import org.apache.mahout.math.MatrixSlice;
+import org.apache.mahout.math.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +19,24 @@ import org.slf4j.LoggerFactory;
 public class TopicModel implements Configurable, Iterable<MatrixSlice> {
     private static final Logger log = LoggerFactory.getLogger(TopicModel.class);
 
-    //private final Matrix topicTermCounts;
+    private final Matrix topicTermCounts;
     //private final int numTopics;
-    //private final int numTerms;
+    private final int numTerms;
 
     private Configuration conf;
+
+    public TopicModel(Configuration conf, Path... modelPaths) throws IOException {
+        this.conf = conf;
+        Pair<Matrix,Vector> matrixVectorPair =
+            org.apache.mahout.clustering.lda.cvb.TopicModel.loadModel(conf, modelPaths);
+        this.topicTermCounts = matrixVectorPair.getFirst();
+        this.numTerms = topicTermCounts.numCols();
+    }
+
+    public TopicModel(Matrix topicTermCounts) {
+        this.topicTermCounts = topicTermCounts;
+        this.numTerms = topicTermCounts.numCols();
+    }
 
     public void setConf(Configuration configuration) {
         this.conf = configuration;
