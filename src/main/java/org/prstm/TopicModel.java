@@ -20,21 +20,26 @@ public class TopicModel implements Configurable, Iterable<MatrixSlice> {
     private static final Logger log = LoggerFactory.getLogger(TopicModel.class);
 
     private final Matrix topicTermCounts;
-    //private final int numTopics;
+    private final Vector topicSums;
+
+    private final int numTopics;
     private final int numTerms;
 
     private Configuration conf;
 
     public TopicModel(Configuration conf, Path... modelPaths) throws IOException {
-        this.conf = conf;
-        Pair<Matrix,Vector> matrixVectorPair =
-            org.apache.mahout.clustering.lda.cvb.TopicModel.loadModel(conf, modelPaths);
-        this.topicTermCounts = matrixVectorPair.getFirst();
-        this.numTerms = topicTermCounts.numCols();
+        this(org.apache.mahout.clustering.lda.cvb.TopicModel.loadModel(conf, modelPaths));
+
     }
 
-    public TopicModel(Matrix topicTermCounts) {
+    public TopicModel(Pair<Matrix, Vector> model) {
+        this(model.getFirst(), model.getSecond());
+    }
+
+    public TopicModel(Matrix topicTermCounts, Vector topicSums) {
         this.topicTermCounts = topicTermCounts;
+        this.topicSums = topicSums;
+        this.numTopics = topicSums.size();
         this.numTerms = topicTermCounts.numCols();
     }
 

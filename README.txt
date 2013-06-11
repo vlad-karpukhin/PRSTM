@@ -1,1 +1,1 @@
-Probabilistic robust sparse topic model implementation using apache mahout library
+Robust Sparse Probabilistic topic model implementation using apache mahout library
