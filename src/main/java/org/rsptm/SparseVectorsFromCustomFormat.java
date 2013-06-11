@@ -1,7 +1,7 @@
 /*
  * &copy; John Wiley &amp; Sons, Inc
  */
-package org.prstm;
+package org.rsptm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
