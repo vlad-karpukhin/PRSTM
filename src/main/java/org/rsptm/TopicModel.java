@@ -25,8 +25,8 @@ public class TopicModel implements Configurable, Iterable<MatrixSlice> {
     private final Matrix topicTermCounts;
     private final Vector topicSums;
 
-    private final int numTopics;
-    private final int numTerms;
+    final int numTopics;
+    final int numTerms;
 
     private Configuration conf;
 

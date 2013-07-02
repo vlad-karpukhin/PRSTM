@@ -47,32 +47,33 @@ public class RSPTMMapper extends Mapper<IntWritable, VectorWritable, IntWritable
         numTopics = conf.getInt(RSPTMDriver.NUM_TOPICS, -1);
         int numTerms = conf.getInt(RSPTMDriver.NUM_TERMS, -1);
         maxIters = conf.getInt(RSPTMDriver.MAX_ITERATIONS_PER_DOC, 10);
+        int numTrainThreads = conf.getInt(RSPTMDriver.NUM_TRAIN_THREADS, 4);
 
         LOG.info("Initializing read model");
-        TopicModel readModel;
+        TopicModel model;
 
         Path[] modelPaths = RSPTMDriver.getModelPaths(conf);
         if (modelPaths != null && modelPaths.length > 0) {
-            readModel = new TopicModel(conf, modelPaths);
+            model = new TopicModel(conf, modelPaths);
         } else {
-            LOG.info("No model files found");
-            readModel = new TopicModel(numTopics, numTerms, RandomUtils.getRandom(seed));
+            LOG.info("No model files found, initializing with random values");
+            model = new TopicModel(numTopics, numTerms, RandomUtils.getRandom(seed));
         }
 
-        LOG.info("Initializing write model");
-        //TopicModel writeModel = new TopicModel(numTopics, numTerms, eta, alpha, null, numUpdateThreads);
+
 
 
         LOG.info("Initializing model trainer");
+        modelTrainer = new ModelTrainer(model, numTrainThreads);
+        modelTrainer.start();
 
     }
 
     @Override
     public void map(IntWritable docId, VectorWritable document, Context context)
         throws IOException, InterruptedException{
-        /* where to get docTopics? */
-        Vector topicVector = new DenseVector(new double[numTopics]).assign(1.0/numTopics);
-        //modelTrainer.train(document.get(), topicVector, true, maxIters);
+
+        modelTrainer.train(document.get(), maxIters);
     }
 
 
